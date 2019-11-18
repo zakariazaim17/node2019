@@ -28,8 +28,18 @@ app.get('/animals', async (req, res) => {
 
 });
 
-app.get ('/animal', async (req, res) => {
-   
+app.get('/animal', async (req, res) => {
+  console.log(req.query);
+
+	//res.send(`query params? ${req.query}`);
+	try {
+		const [results] = await connection.query(
+			'SELECT * FROM zoo.animal WHERE name LIKE ?',
+			[req.query.name]);
+		       res.json(results);
+	} catch (e) {
+		res.send(`db error ${e}`);
+	}
 });
 
 app.get('/', (req, res) => {
