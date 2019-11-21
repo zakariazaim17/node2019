@@ -7,8 +7,22 @@ const express = require('express');
 const connection = require('./model/db.js');
 const animal = require('./model/animal.js');
 
+
 const port = 3000;
 const app = express();
+
+if(process.env.SERVER === 'dev_localhost'){
+	require('./secure/localhost')(app);
+} else {
+	require('./secure/server')(app);
+	app.listen(3000, () => {
+	console.log('server app start')
+	});
+}
+
+
+
+
 const bodyParser = require('body-parser');
 
 
@@ -54,7 +68,11 @@ app.post('/animal', bodyParser.urlencoded({extended: true}), async (req, res) =>
 });
 
 app.get('/', (req, res) => {
-    res.send('Hello from my node server');
+	if(req.secure){
+	res.send('Hello from my node secure server');}
+	else {
+		res.send('Hello  from my node server unsecure');
+	}
 });
 
 app.get('/demo', (req, res)=> {
@@ -63,6 +81,4 @@ app.get('/demo', (req, res)=> {
 		res.send('demo');
 });
 
-app.listen(3000, () => {
-	console.log('server app start?');
-});
+
